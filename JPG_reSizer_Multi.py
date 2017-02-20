@@ -5,7 +5,9 @@
 Filename:       JPG_reSizer_Multi.py
 Author:         Martin Walch
 Release Date:   2016-04-14
-Description:    Iterates through a directory tree, and resizes all jpegs in place.
+Description:    Iterates through a directory tree, resizes all jpegs.
+                
+                NB. Writes over original files
                 
                 Fullsize  Nikon D3200 file 	= 	4512 x 3000 	pixels.
              
@@ -30,14 +32,26 @@ from multiprocessing import Pool
 namePath = []
 newSize = (1920,1278)
 quality = 100
+count = 0
 
 #inputDir = root directory that will be parsed (includes subdirectories)
 #files are resized and original is overwritten
-inputDir = '/Users/pyDev/Documents/JPG_TIMESLICERY/JPG_TimeSlice_Multi/input/08'     
-#fileExt = '.jpg'        #restrict to .jpg's - the result of JPG_timeNamer.py                                                         
+inputDir = '/Volumes/DTLA_1_NavarreRiver_2_LakeStClair_3_LakeKingWilliam/KINGWIL_1920'     
+fileExt = '.jpg'        #restrict to .jpg's - the result of JPG_timeNamer.py                                                         
+
+for root, dirs, files in os.walk(inputDir):
+    for name in files:
+            
+        if name.endswith(fileExt):
+            namePath.append(os.path.join(root,name))
+
+            count = count + 1
+            print 'Processed ', count, '  ', name
+            print
 
 
-pictureList = dirwalk.dirwalk(inputDir)
+
+#pictureList = dirwalk.dirwalk(inputDir)
 
 
 
@@ -80,21 +94,21 @@ def Timer(start, end):
 ##### RUN #####
 
 if __name__ == '__main__':
-    start = time.clock()
+    start = time.time()
 
     print '   '
     print 'Running JPG_reSizer_Multi.py   '
     print '   '
 
     pool = Pool()
-    pool.map(reSize, pictureList)
+    pool.map(reSize, namePath)
     pool.close()
     pool.join()
 
 
 
 
-    finish = time.clock()
+    finish = time.time()
 
     print '\nProcessing done in ', Timer(start, finish)
     print 'Images processed: ', str(count)
@@ -102,26 +116,5 @@ if __name__ == '__main__':
 
 
 
-"""
-if __name__ == '__main__':
-    start = time.clock()
-
-    print '   '
-    print 'Running JPG_reSizer_Multi.py   '
-    print '   '
-
-
-
-    for name in pictureList:
-        reSize(name)
-        count +=1
-
-        
-
-    finish = time.clock()
-
-    print '\nProcessing done in ', Timer(start, finish)
-    print 'Images processed: ', str(count)
-"""
 
 
